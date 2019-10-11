@@ -1,0 +1,9 @@
+Implementations of the MD5, SHA1, SHA224, and SHA256 hashing functions.
+
+Compilation :
+
+- To generate all binaries & libyhash :
+   
+   $ make 
+  
+WARNING : Using the libyhash requires compiling your code with the -std=c99 C flag. 

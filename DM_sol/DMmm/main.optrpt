@@ -1,0 +1,943 @@
+Intel(R) Advisor can now assist with vectorization and show optimization
+  report messages with your source code.
+See "https://software.intel.com/en-us/intel-advisor-xe" for details.
+
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINING OPTION VALUES:
+  -inline-factor: 100
+  -inline-min-size: 30
+  -inline-max-size: 230
+  -inline-max-total-size: 2000
+  -inline-max-per-routine: 10000
+  -inline-max-per-compile: 500000
+
+
+Begin optimization report for: main(int, char **)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (main(int, char **)) [1] main.c(135,1)
+  -> INLINE: (140,12) atoll(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (141,12) atoll(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> INLINE: (142,12) atoll(const char *)
+     {{ Inlining of routines from system headers is omitted. Use -qopt-report=3 to view full report. }}
+  -> CP_CLONE (153,13) measure_mm..0(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+  -> CP_CLONE (154,13) measure_mm..1(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+  -> CP_CLONE (155,13) measure_mm..2(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+  -> CP_CLONE (156,13) measure_mm..3(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+  -> CP_CLONE (157,13) measure_mm..4(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+
+
+    Report from: Code generation optimizations [cg]
+
+main.c(135,1):remark #34051: REGISTER ALLOCATION : [main] main.c:135
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   10[ rax rdx rcx rsi rdi r8 r12-r14 zmm0]
+        
+    Routine temporaries
+        Total         :     121
+            Global    :      24
+            Local     :      97
+        Regenerable   :      51
+        Spilled       :       8
+        
+    Routine stack
+        Variables     :       4 bytes*
+            Reads     :       2 [0.00e+00 ~ 0.0%]
+            Writes    :       2 [0.00e+00 ~ 0.0%]
+        Spills        :      40 bytes*
+            Reads     :       8 [5.76e+00 ~ 9.1%]
+            Writes    :       5 [3.60e+00 ~ 5.7%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: measure_mm..0(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (measure_mm..0(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)) [2] main.c(55,1)
+  CLONED FROM: measure_mm(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)(X,raddr(mm1)(P64),X,X,X)
+  -> INLINE: (70,3) init(double *__restrict__, u64, double)
+  -> INLINE: (71,3) init(double *__restrict__, u64, double)
+  -> INLINE: (72,3) init(double *__restrict__, u64, double)
+  -> INLINE: (78,16) rdtsc(void)
+  -> INLINE: (85,15) rdtsc(void)
+  -> INLINE: (95,3) sort(double *__restrict__, u64)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at main.c(47,1) inlined into main.c(70,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(71,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(72,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(81,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+LOOP END
+
+LOOP BEGIN at main.c(33,3) inlined into main.c(95,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between cycles[j] (39:4) and cycles[j] (40:4)
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between cycles[i] (37:17) and cycles[i] (39:4)
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at main.c(75,3)
+   remark #15526: loop was not vectorized: ASM code cannot be vectorized   [ rdtsc.h(6,0) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(55,1):remark #34051: REGISTER ALLOCATION : [measure_mm..0] main.c:55
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   22[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm7]
+        
+    Routine temporaries
+        Total         :     431
+            Global    :     120
+            Local     :     311
+        Regenerable   :     144
+        Spilled       :      16
+        
+    Routine stack
+        Variables     :     184 bytes*
+            Reads     :      12 [0.00e+00 ~ 0.0%]
+            Writes    :      22 [7.00e+01 ~ 4.2%]
+        Spills        :     168 bytes*
+            Reads     :      47 [7.73e+01 ~ 4.7%]
+            Writes    :      36 [5.69e+01 ~ 3.4%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: measure_mm..1(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (measure_mm..1(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)) [3] main.c(55,1)
+  CLONED FROM: measure_mm(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)(X,raddr(mm2)(P64),X,X,X)
+  -> INLINE: (70,3) init(double *__restrict__, u64, double)
+  -> INLINE: (71,3) init(double *__restrict__, u64, double)
+  -> INLINE: (72,3) init(double *__restrict__, u64, double)
+  -> INLINE: (78,16) rdtsc(void)
+  -> INLINE: (85,15) rdtsc(void)
+  -> INLINE: (95,3) sort(double *__restrict__, u64)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at main.c(47,1) inlined into main.c(70,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(71,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(72,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(81,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+LOOP END
+
+LOOP BEGIN at main.c(33,3) inlined into main.c(95,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between cycles[j] (39:4) and cycles[j] (40:4)
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between cycles[i] (37:17) and cycles[i] (39:4)
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at main.c(75,3)
+   remark #15526: loop was not vectorized: ASM code cannot be vectorized   [ rdtsc.h(6,0) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(55,1):remark #34051: REGISTER ALLOCATION : [measure_mm..1] main.c:55
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   22[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm7]
+        
+    Routine temporaries
+        Total         :     431
+            Global    :     120
+            Local     :     311
+        Regenerable   :     144
+        Spilled       :      16
+        
+    Routine stack
+        Variables     :     184 bytes*
+            Reads     :      12 [0.00e+00 ~ 0.0%]
+            Writes    :      22 [7.00e+01 ~ 4.2%]
+        Spills        :     168 bytes*
+            Reads     :      47 [7.73e+01 ~ 4.7%]
+            Writes    :      36 [5.69e+01 ~ 3.4%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: measure_mm..2(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (measure_mm..2(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)) [4] main.c(55,1)
+  CLONED FROM: measure_mm(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)(X,raddr(mm3)(P64),X,X,X)
+  -> INLINE: (70,3) init(double *__restrict__, u64, double)
+  -> INLINE: (71,3) init(double *__restrict__, u64, double)
+  -> INLINE: (72,3) init(double *__restrict__, u64, double)
+  -> INLINE: (78,16) rdtsc(void)
+  -> INLINE: (85,15) rdtsc(void)
+  -> INLINE: (95,3) sort(double *__restrict__, u64)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at main.c(47,1) inlined into main.c(70,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(71,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(72,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(81,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+LOOP END
+
+LOOP BEGIN at main.c(33,3) inlined into main.c(95,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between cycles[j] (39:4) and cycles[j] (40:4)
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between cycles[i] (37:17) and cycles[i] (39:4)
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at main.c(75,3)
+   remark #15526: loop was not vectorized: ASM code cannot be vectorized   [ rdtsc.h(6,0) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(55,1):remark #34051: REGISTER ALLOCATION : [measure_mm..2] main.c:55
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   22[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm7]
+        
+    Routine temporaries
+        Total         :     431
+            Global    :     120
+            Local     :     311
+        Regenerable   :     144
+        Spilled       :      16
+        
+    Routine stack
+        Variables     :     184 bytes*
+            Reads     :      12 [0.00e+00 ~ 0.0%]
+            Writes    :      22 [7.00e+01 ~ 4.2%]
+        Spills        :     168 bytes*
+            Reads     :      47 [7.73e+01 ~ 4.7%]
+            Writes    :      36 [5.69e+01 ~ 3.4%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: measure_mm..3(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (measure_mm..3(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)) [5] main.c(55,1)
+  CLONED FROM: measure_mm(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)(X,raddr(mm4)(P64),X,X,X)
+  -> INLINE: (70,3) init(double *__restrict__, u64, double)
+  -> INLINE: (71,3) init(double *__restrict__, u64, double)
+  -> INLINE: (72,3) init(double *__restrict__, u64, double)
+  -> INLINE: (78,16) rdtsc(void)
+  -> INLINE: (85,15) rdtsc(void)
+  -> INLINE: (95,3) sort(double *__restrict__, u64)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at main.c(47,1) inlined into main.c(70,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(71,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(72,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(81,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+LOOP END
+
+LOOP BEGIN at main.c(33,3) inlined into main.c(95,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between cycles[j] (39:4) and cycles[j] (40:4)
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between cycles[i] (37:17) and cycles[i] (39:4)
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at main.c(75,3)
+   remark #15526: loop was not vectorized: ASM code cannot be vectorized   [ rdtsc.h(6,0) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(55,1):remark #34051: REGISTER ALLOCATION : [measure_mm..3] main.c:55
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   22[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm7]
+        
+    Routine temporaries
+        Total         :     431
+            Global    :     120
+            Local     :     311
+        Regenerable   :     144
+        Spilled       :      16
+        
+    Routine stack
+        Variables     :     184 bytes*
+            Reads     :      12 [0.00e+00 ~ 0.0%]
+            Writes    :      22 [7.00e+01 ~ 4.2%]
+        Spills        :     168 bytes*
+            Reads     :      47 [7.73e+01 ~ 4.7%]
+            Writes    :      36 [5.69e+01 ~ 3.4%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: measure_mm..4(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (measure_mm..4(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)) [6] main.c(55,1)
+  CLONED FROM: measure_mm(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)(X,raddr(mm5)(P64),X,X,X)
+  -> INLINE: (70,3) init(double *__restrict__, u64, double)
+  -> INLINE: (71,3) init(double *__restrict__, u64, double)
+  -> INLINE: (72,3) init(double *__restrict__, u64, double)
+  -> INLINE: (78,16) rdtsc(void)
+  -> INLINE: (85,15) rdtsc(void)
+  -> INLINE: (95,3) sort(double *__restrict__, u64)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at main.c(47,1) inlined into main.c(70,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(71,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(72,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(81,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+LOOP END
+
+LOOP BEGIN at main.c(33,3) inlined into main.c(95,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between cycles[j] (39:4) and cycles[j] (40:4)
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between cycles[i] (37:17) and cycles[i] (39:4)
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at main.c(75,3)
+   remark #15526: loop was not vectorized: ASM code cannot be vectorized   [ rdtsc.h(6,0) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(55,1):remark #34051: REGISTER ALLOCATION : [measure_mm..4] main.c:55
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   22[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm7]
+        
+    Routine temporaries
+        Total         :     431
+            Global    :     120
+            Local     :     311
+        Regenerable   :     144
+        Spilled       :      16
+        
+    Routine stack
+        Variables     :     184 bytes*
+            Reads     :      12 [0.00e+00 ~ 0.0%]
+            Writes    :      22 [7.00e+01 ~ 4.2%]
+        Spills        :     168 bytes*
+            Reads     :      47 [7.73e+01 ~ 4.7%]
+            Writes    :      36 [5.69e+01 ~ 3.4%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: rdtsc(void)
+
+    Report from: Interprocedural optimizations [ipo]
+
+DEAD STATIC FUNCTION: (rdtsc(void)) rdtsc.h(3,1)
+
+===========================================================================
+
+Begin optimization report for: sort(double *__restrict__, u64)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (sort(double *__restrict__, u64)) [9] main.c(32,1)
+
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(33,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between a[j] (39:4) and a[j] (40:4)
+
+   LOOP BEGIN at main.c(34,5)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between a[i] (37:17) and a[i] (39:4)
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at main.c(34,5)
+   <Remainder>
+   LOOP END
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(32,1):remark #34051: REGISTER ALLOCATION : [sort] main.c:32
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   12[ rax rdx rcx rbp rsi rdi r8-r11 zmm0-zmm1]
+        
+    Routine temporaries
+        Total         :      27
+            Global    :      24
+            Local     :       3
+        Regenerable   :       1
+        Spilled       :       1
+        
+    Routine stack
+        Variables     :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+        Spills        :       0 bytes*
+            Reads     :       0 [0.00e+00 ~ 0.0%]
+            Writes    :       0 [0.00e+00 ~ 0.0%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: measure_mm(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (measure_mm(const char *, void (*)(double *__restrict__, double *__restrict__, double *__restrict__, u64), const u64, const u64, const u64)) [10] main.c(55,1)
+  -> INLINE: (70,3) init(double *__restrict__, u64, double)
+  -> INLINE: (71,3) init(double *__restrict__, u64, double)
+  -> INLINE: (72,3) init(double *__restrict__, u64, double)
+  -> INLINE: (78,16) rdtsc(void)
+  -> INDIRECT-: (82,2)  mm_fct_148_V$12.0.5
+  -> INLINE: (85,15) rdtsc(void)
+  -> INLINE: (95,3) sort(double *__restrict__, u64)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at main.c(47,1) inlined into main.c(70,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(71,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+OpenMP Construct at main.c(47,1) inlined into main.c(72,3)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(81,7)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+LOOP END
+
+LOOP BEGIN at main.c(33,3) inlined into main.c(95,3)
+   remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+   remark #15346: vector dependence: assumed ANTI dependence between cycles[j] (39:4) and cycles[j] (40:4)
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+      remark #15344: loop was not vectorized: vector dependence prevents vectorization. First dependence is shown below. Use level 5 report for details
+      remark #15346: vector dependence: assumed ANTI dependence between cycles[i] (37:17) and cycles[i] (39:4)
+      remark #25439: unrolled with remainder by 2  
+   LOOP END
+
+   LOOP BEGIN at main.c(34,5) inlined into main.c(95,3)
+   <Remainder>
+   LOOP END
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(70,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(71,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1) inlined into main.c(72,3)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+
+Non-optimizable loops:
+
+
+LOOP BEGIN at main.c(75,3)
+   remark #15526: loop was not vectorized: ASM code cannot be vectorized   [ rdtsc.h(6,0) ]
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(55,1):remark #34051: REGISTER ALLOCATION : [measure_mm] main.c:55
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   22[ rax rdx rcx rbx rsi rdi r8-r15 zmm0-zmm7]
+        
+    Routine temporaries
+        Total         :     432
+            Global    :     121
+            Local     :     311
+        Regenerable   :     144
+        Spilled       :      17
+        
+    Routine stack
+        Variables     :     184 bytes*
+            Reads     :      12 [0.00e+00 ~ 0.0%]
+            Writes    :      22 [7.00e+01 ~ 4.2%]
+        Spills        :     176 bytes*
+            Reads     :      50 [1.08e+02 ~ 6.5%]
+            Writes    :      37 [5.79e+01 ~ 3.5%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================
+
+Begin optimization report for: init(double *__restrict__, u64, double)
+
+    Report from: Interprocedural optimizations [ipo]
+
+INLINE REPORT: (init(double *__restrict__, u64, double)) [11] main.c(46,1)
+
+
+    Report from: OpenMP optimizations [openmp]
+
+OpenMP Construct at main.c(47,1)
+remark #16200: OpenMP DEFINED LOOP WAS PARALLELIZED
+
+    Report from: Loop nest, Vector & Auto-parallelization optimizations [loop, vec, par]
+
+
+LOOP BEGIN at main.c(47,1)
+<Peeled loop for vectorization>
+LOOP END
+
+LOOP BEGIN at main.c(47,1)
+   remark #15300: LOOP WAS VECTORIZED
+LOOP END
+
+LOOP BEGIN at main.c(47,1)
+<Remainder loop for vectorization>
+   remark #15335: remainder loop was not vectorized: vectorization possible but seems inefficient. Use vector always directive or -vec-threshold0 to override 
+LOOP END
+
+    Report from: Code generation optimizations [cg]
+
+main.c(46,1):remark #34051: REGISTER ALLOCATION : [init] main.c:46
+
+    Hardware registers
+        Reserved     :    2[ rsp rip]
+        Available    :   39[ rax rdx rcx rbx rbp rsi rdi r8-r15 mm0-mm7 zmm0-zmm15]
+        Callee-save  :    6[ rbx rbp r12-r15]
+        Assigned     :   12[ rax rdx rcx rbx rsi rdi r8-r10 r12-r13 zmm0]
+        
+    Routine temporaries
+        Total         :     119
+            Global    :      25
+            Local     :      94
+        Regenerable   :      46
+        Spilled       :       1
+        
+    Routine stack
+        Variables     :      64 bytes*
+            Reads     :       4 [0.00e+00 ~ 0.0%]
+            Writes    :       8 [2.40e+01 ~ 8.6%]
+        Spills        :      48 bytes*
+            Reads     :      13 [7.70e+00 ~ 2.8%]
+            Writes    :      11 [1.10e+01 ~ 3.9%]
+    
+    Notes
+    
+        *Non-overlapping variables and spills may share stack space,
+         so the total stack size might be less than this.
+    
+
+===========================================================================

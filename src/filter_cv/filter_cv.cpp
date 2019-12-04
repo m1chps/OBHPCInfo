@@ -1,12 +1,13 @@
 #include <cmath>
 #include <chrono>
 #include <vector>
+#include <cstdlib>
 #include <stdint.h>
 #include <iostream>
-#include "opencv2/opencv.hpp"
+#include <x86intrin.h>
 
 //
-#include <x86intrin.h>
+#include "opencv2/opencv.hpp"
 
 //
 #define INDEX(x, y, w) (((x) * (w)) + (y))
@@ -57,6 +58,41 @@ int filter_gauss_blur_sum = 16;
 int filter_gauss_blur[FILTER_H * FILTER_W] = {  1, 2, 1,
 						2, 4, 2,
 						1, 2, 1  };
+
+//
+const unsigned one_as_int = 0x3F000000;
+
+//
+const float scale_up = (float)(0x00800000);
+
+//
+const float scale_down = 1 / scale_up;
+
+//
+static inline unsigned as_int(float f)
+{ return *(unsigned *)&f; }
+
+//
+static float as_float(unsigned u)
+{ return *(float *)&u; }
+
+//
+static inline float _sqrt_blinn_(float x)
+{ return as_float((as_int(x) >> 1) + (one_as_int >> 1)); }
+
+//
+static inline unsigned long long convert_f2i(double x)
+{
+  unsigned long long r;
+  const double c = (1ll << 52);
+  union { double  v; int64_t b; } tmp;
+  
+  tmp.v  = x + c;
+  tmp.b  = tmp.b & 0x000fffffffffffffll;
+  r      = tmp.b;
+  
+  return r;
+}
 
 //
 static inline int convolve(byte *m, int *f, u64 fh, u64 fw)
@@ -156,11 +192,84 @@ static inline void apply_sobel_filter_fast2(byte *img_in, byte *img_out, u64 h, 
       gy += img_in[i + 7] * f2[7];
       gy += img_in[i + 8] * f2[8];
 
-      //Sqrt
+      //Sqrt - No need for double precision. A rough approximation would do.
       mag = sqrt((gx * gx) + (gy * gy));
 
-      //Condition
+      //Condition should be removed. Branches inside loops are bad
       img_out[i] = (mag > threshold) ? 255 : mag;
+    }
+}
+
+//
+static inline void apply_sobel_filter_fast3(byte *img_in, byte *img_out, u64 h, u64 w, short threshold)
+{
+  short __attribute__((aligned(16))) gx[16];
+  short __attribute__((aligned(16))) gy[16];
+  
+  short _gx_;
+  short _gy_;
+  
+  short mag = 0;
+  static int f1[9] = { -1, 0, 1, -2, 0, 2, -1, 0, 1 }; //3x3 matrix
+  static int f2[9] = { -1, -2, -1, 0, 0, 0, 1, 2, 1 }; //3x3 matrix
+  
+  for (u64 i = 0; i < (h - 3) * (w - 3); i++)
+    {
+      gx[0] = (img_in[i + 0] * f1[0]) + (img_in[i + 1] * f1[1]);
+      gx[1] = (img_in[i + 2] * f1[2]) + (img_in[i + 3] * f1[3]);
+      gx[2] = (img_in[i + 4] * f1[4]) + (img_in[i + 5] * f1[5]);
+      gx[3] = (img_in[i + 6] * f1[6]) + (img_in[i + 7] * f1[7]);      
+      gx[4] = (img_in[i + 8] * f1[8]);
+
+      _gx_ = (gx[0] + gx[1] + gx[2] + gx[3] + gx[4]);
+
+      gy[0] = (img_in[i + 0] * f2[0]) + (img_in[i + 1] * f2[1]);
+      gy[1] = (img_in[i + 2] * f2[2]) + (img_in[i + 3] * f2[3]);
+      gy[2] = (img_in[i + 4] * f2[4]) + (img_in[i + 5] * f2[5]);
+      gy[3] = (img_in[i + 6] * f2[6]) + (img_in[i + 7] * f2[7]);
+      gy[4] = (img_in[i + 8] * f2[8]);      
+
+      _gy_ = (gy[0] + gy[1] + gy[2] + gy[3] + gy[4]);
+      
+      //Super fast Sqrt
+      mag = _sqrt_blinn_((_gx_ * _gx_) + (_gy_ * _gy_));
+
+      img_out[i] = (mag > threshold) ? 255 : mag;
+    }
+}
+
+//
+static inline void apply_sobel_filter_fast4(byte *img_in, byte *img_out, u64 h, u64 w, int threshold)
+{
+  short __attribute__((aligned(16))) gx[16];
+  short __attribute__((aligned(16))) gy[16];
+  
+  short _gx_;
+  short _gy_;
+  
+  int mag = 0;
+  
+  for (u64 i = 0; i < (h - 3) * (w - 3); i++)
+    {
+      gx[0] = -img_in[i + 0];
+      gx[1] =  img_in[i + 2] - (img_in[i + 3] << 1);
+      gx[2] =  (img_in[i + 5] << 1);
+      gx[3] = -img_in[i + 6];      
+      gx[4] =  img_in[i + 8];
+
+      _gx_ = (gx[0] + gx[1] + gx[2] + gx[3] + gx[4]);
+
+      gy[0] = -img_in[i + 0] - (img_in[i + 1] << 1);
+      gy[1] = -img_in[i + 2];
+      gy[3] =  img_in[i + 6] + (img_in[i + 7] << 1);
+      gy[4] =  img_in[i + 8];      
+
+      _gy_ = (gy[0] + gy[1] + gy[3] + gy[4]);
+      
+      //Super fast Sqrt
+      mag = _sqrt_blinn_((_gx_ * _gx_) + (_gy_ * _gy_));
+      
+      img_out[i] = (byte) mag;
     }
 }
 
@@ -171,15 +280,16 @@ static inline void apply_sobel_filter_fast2(byte *img_in, byte *img_out, u64 h, 
 int main(int argc, char **argv)
 {
   //
-  cv::VideoCapture cap(0);
+  cv::VideoCapture cap(atoll(argv[1]));
   
-  cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
-  cap.set(cv::CAP_PROP_FRAME_WIDTH,  IMG_W);
-  cap.set(cv::CAP_PROP_FRAME_HEIGHT, IMG_H);
-  cap.set(cv::CAP_PROP_FPS, 60);
+  // cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
+  // cap.set(cv::CAP_PROP_FRAME_WIDTH,  IMG_W);
+  // cap.set(cv::CAP_PROP_FRAME_HEIGHT, IMG_H);
+  // cap.set(cv::CAP_PROP_FPS, 60);
   
   cv::Mat gray;
   cv::Mat frame;
+  cv::Mat resized;
   
   std::vector<double> durations;
   
@@ -201,9 +311,11 @@ int main(int argc, char **argv)
 	  
 	  return -1;
 	}
+
+      cv::resize(frame, resized, cv::Size(IMG_W, IMG_H));
       
       //Convert to gray
-      cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+      cv::cvtColor(resized, gray, cv::COLOR_BGR2GRAY);
       
       cv::Mat out(gray.rows, gray.cols, CV_8UC1);
       
@@ -211,9 +323,13 @@ int main(int argc, char **argv)
       
       //The magic function	
       //apply_sobel_filter((byte *)gray.data, (byte *)out.data, gray.rows, gray.cols, 100); 
-      apply_sobel_filter_fast2((byte *)gray.data, (byte *)out.data, gray.rows, gray.cols, 100); 
-      //apply_filter((byte *)gray.data, gray.rows, gray.cols, filter_edge3, 3, 3, (byte *)out.data, 1);
+      //apply_sobel_filter_fast2((byte *)gray.data, (byte *)out.data, gray.rows, gray.cols, 100); 
+      //apply_sobel_filter_fast3((byte *)gray.data, (byte *)out.data, gray.rows, gray.cols, 100); 
+      apply_sobel_filter_fast4((byte *)gray.data, (byte *)out.data, gray.rows, gray.cols, 100);
+      //apply_filter(byte *img_in, u64 h, u64 w, int *f, u64 fh, u64 fw, byte *img_out, int sum)
       
+      //apply_filter((byte *)gray.data, gray.rows, gray.cols, filter_edge1, FILTER_H, FILTER_W, (byte *)out.data, 1);
+
       time_point end = timing::now();
 
       int duration = std::chrono::duration_cast<time_unit>(end - start).count();
